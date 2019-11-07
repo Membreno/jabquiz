@@ -13,7 +13,7 @@ const App = (() => {
   const restartButtonEl = document.querySelector(".restart");
 
   const q1 = new Question(
-    "First President of US?",
+    "First President of the United States?",
     ["Barrack", "Al", "George", "Corey"],
     2
   )
@@ -40,5 +40,79 @@ const App = (() => {
 
   const quiz = new Quiz ([q1, q2, q3, q4, q5]);
 
-  console.log(quiz)
+  const setValue = (elem, value) => {
+    elem.innerHTML = value;
+  }
+
+  const renderQuestion = _ => {
+    const question = quiz.getCurrentQuestion().question;
+    setValue(quizQuestionEl, question);
+    quizQuestionEl.innerHTML = question;
+  }
+
+  const renderChoicesElements = _ => {
+    let markup = "";
+    const currentChoices = quiz.getCurrentQuestion().choices;
+    currentChoices.forEach((elem, index) => {
+      markup += `
+        <li class="jabquiz__choice">
+          <input type="radio" name="choice" class="jabquiz__input" id="choice${index}">
+          <label for="choice${index}" class="jabquiz__label">
+            <i></i>
+            <span>${elem}</span>
+          </label>
+        </li>
+      `
+    });
+
+    setValue(choicesEl, markup);
+  }
+
+  const renderTracker = _ => {
+    const index = quiz.currentIndex;
+    setValue(trackerEl, `${index + 1} of ${quiz.questions.length}`);
+  }
+
+  const getPercentage = (num1, num2) => {
+    return Math.round((num1/num2) * 100);
+  }
+
+  const launch = (width, maxPercent) => {
+    let loadingBar = setInterval(function() {
+      if (width > maxPercent) {
+        clearInterval(loadingBar);
+      } else {
+        width++;
+        progressInnerEl.style.width = width + "%";
+      }
+    }, 3)
+  }
+
+  const renderProgress = _ => {
+    // 1. width
+    const currentWidth = getPercentage(quiz.currentIndex, quiz.questions.length);
+    // 2. lauch(0, width)
+    launch(0, currentWidth)
+  }
+
+  const renderAll = _ =>{
+    if(quiz.hasEnded()) {
+      // renderEndScreen
+    } else {
+      // 1. Render the question
+      renderQuestion();
+      // 2. Render the choices elements
+      renderChoicesElements();
+      // 3. Render Tracker
+      renderTracker();
+      // 4. Render Progress
+      renderProgress();
+    }
+  }
+
+  return {
+    renderAll: renderAll
+  }
 })();
+
+App.renderAll();
