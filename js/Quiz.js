@@ -17,6 +17,9 @@ Quiz.prototype.guess = function(userGuess){
   if (currentQuestion.isCorrect(userGuess)){
     this.score++;
   }
-
   this.nextIndex();
+}
+Quiz.prototype.reset = function() {
+  this.score = 0;
+  this.currentIndex = 0;
 }
